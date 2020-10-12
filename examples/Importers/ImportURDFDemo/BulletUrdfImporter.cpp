@@ -134,57 +134,60 @@ struct BulletErrorLogger : public ErrorLogger
 
 bool BulletURDFImporter::loadURDF(const char* fileName, bool forceFixedBase)
 {
-	if (strlen(fileName) == 0)
-		return false;
-
-	//int argc=0;
-	char relativeFileName[1024];
-
-	b3FileUtils fu;
-
-	//bool fileFound = fu.findFile(fileName, relativeFileName, 1024);
-	bool fileFound = m_data->m_fileIO->findResourcePath(fileName, relativeFileName, 1024);
-
 	std::string xml_string;
+	if (fileName[0] != '<') {
+		if (strlen(fileName) == 0)
+			return false;
 
-	if (!fileFound)
-	{
-		b3Warning("URDF file '%s' not found\n", fileName);
-		return false;
-	}
-	else
-	{
-		char path[1024];
-		fu.extractPath(relativeFileName, path, sizeof(path));
-		m_data->setSourceFile(relativeFileName, path);
+		//int argc=0;
+		char relativeFileName[1024];
 
-		//read file
-		int fileId = m_data->m_fileIO->fileOpen(relativeFileName,"r");
+		b3FileUtils fu;
 
+		//bool fileFound = fu.findFile(fileName, relativeFileName, 1024);
+		bool fileFound = m_data->m_fileIO->findResourcePath(fileName, relativeFileName, 1024);
 
-		char destBuffer[8192];
-		char* line = 0;
-		do
+		if (!fileFound)
 		{
-			line = m_data->m_fileIO->readLine(fileId, destBuffer, 8192);
-			if (line)
+			b3Warning("URDF file '%s' not found\n", fileName);
+			return false;
+		}
+		else
+		{
+			char path[1024];
+			fu.extractPath(relativeFileName, path, sizeof(path));
+			m_data->setSourceFile(relativeFileName, path);
+
+			//read file
+			int fileId = m_data->m_fileIO->fileOpen(relativeFileName,"r");
+
+
+			char destBuffer[8192];
+			char* line = 0;
+			do
 			{
-				xml_string += (std::string(destBuffer) + "\n");
+				line = m_data->m_fileIO->readLine(fileId, destBuffer, 8192);
+				if (line)
+				{
+					xml_string += (std::string(destBuffer) + "\n");
+				}
 			}
-		}
-		while (line);
-		m_data->m_fileIO->fileClose(fileId);
-#if 0
-		std::fstream xml_file(relativeFileName, std::fstream::in);
-		while (xml_file.good())
-		{
-			std::string line;
-			std::getline(xml_file, line);
-			xml_string += (line + "\n");
-		}
-		xml_file.close();
-#endif
+			while (line);
+			m_data->m_fileIO->fileClose(fileId);
+	#if 0
+			std::fstream xml_file(relativeFileName, std::fstream::in);
+			while (xml_file.good())
+			{
+				std::string line;
+				std::getline(xml_file, line);
+				xml_string += (line + "\n");
+			}
+			xml_file.close();
+	#endif
 
+		}
+	} else {
+		xml_string = std::string(fileName);
 	}
 
 	BulletErrorLogger loggie;

@@ -1,3 +1,6 @@
+This fork was created as a quick-and-dirty way to get a loadURDF() method in pybullet that can take in a URDF string directly (rather than a filename).
+
+
 [![Travis Build Status](https://api.travis-ci.org/bulletphysics/bullet3.png?branch=master)](https://travis-ci.org/bulletphysics/bullet3)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/6sly9uxajr6xsstq)](https://ci.appveyor.com/project/erwincoumans/bullet3)
 
